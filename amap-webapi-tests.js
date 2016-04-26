@@ -4,7 +4,7 @@ import { Tinytest } from "meteor/tinytest";
 // Import and rename a variable exported by amap-webapi.js.
 import AMapWebAPI from "./amap-webapi.js";
 
-var mapAPI = new AMapWebAPI('316941719a6cb142ea8e0c4967be5434');
+var mapAPI = new AMapWebAPI('50d2155c6e7e04502a5a00749a3c4be5');
 
 Tinytest.add('amap - GetStaticMap', function (test) {
   var locations = [];
@@ -21,25 +21,33 @@ Tinytest.add('amap - GetStaticMap', function (test) {
     "lng": "113.900193"
   });
 
-  var staticMap = mapAPI.getStaticMap(locations);
-  test.isNotNull(staticMap, '值不为空');
+  mapAPI.getStaticMap(locations, (error, mapData) => {
+    if (error) {
+      console.log('error', error);
+      return;
+    }
+    console.log('get mapData success');
+  });
 });
 
 Tinytest.add('amap - GetDistance', function (test) {
   var start = { lng: 113, lat: 22 };
   var end = { lng: 114, lat: 25 };
 
-  var miles = mapAPI.getDistance(start, end);
-  test.isNotNull(miles, '值不为空');
+  mapAPI.getDistance(start, end, (error, miles) => {
+    console.log(miles);
+  });
 });
 
 Tinytest.add('amap - Regeocode', function (test) {
   var location = { lng: 113, lat: 22 };
-  var address = mapAPI.regeocode(location);
-  test.isNotNull(address, '值不为空');
+  mapAPI.regeocode(location, (error, address) => {
+    console.log(address);
+  });
 });
 
 Tinytest.add('amap - Geocode', function (test) {
-  var location = mapAPI.geocode('前海梦工场', '深圳');
-  test.isNotNull(location, '值不为空');
+  mapAPI.geocode('前海梦工场', '深圳', (error, location) => {
+    console.log(location);
+  });
 });

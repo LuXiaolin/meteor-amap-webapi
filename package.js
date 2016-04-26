@@ -14,13 +14,13 @@ Package.onUse(function(api) {
   api.versionsFrom('1.3.2.4');
   api.use('ecmascript');
   api.use('http');
-  api.mainModule('amap-webapi.js', 'server');
+  api.mainModule('amap-webapi.js');
 });
 
 Package.onTest(function(api) {
   api.use('ecmascript');
   api.use('tinytest');
   api.use('http');
-  api.use('roadshr:amap-webapi', 'server');
-  api.mainModule('amap-webapi-tests.js', 'server');
+  api.use('roadshr:amap-webapi');
+  api.mainModule('amap-webapi-tests.js');
 });
