@@ -8,11 +8,12 @@ AMapWebAPI = {};
 
 AMapWebAPI.getDistance = function getDistance(start, end, callback) {
   var queryString = {
-    origins: getPositionString(start),
-    destination: getPositionString(end),
+    origins: start,
+    destination: end,
     output: 'json',
     key: setting.webapikey
   };
+  
   var response = HTTP.get(host + 'distance', { params: queryString }, function (error, result) {
     callback(error, JSON.parse(result.content).results[0].distance);
   });
@@ -32,7 +33,7 @@ AMapWebAPI.regeocode = function (location, callback) {
   });
 }
 
-AMapWebAPI.geocode = function (address, city, callback) {
+AMapWebAPI.geocode = function (address, callback) {
   var queryString = {
     address: address,
     output: 'json',
