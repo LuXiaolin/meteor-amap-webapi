@@ -1,50 +1,58 @@
-AMapWebAPI.prototype.getDistance = function getDistance(start, end, callback) {
+var setting = Meteor.settings.public.amap;
+if (!setting) {
+  console.log('error', 'Please Add amap setting.');
+}
+const host = 'http://restapi.amap.com/v3/';
+
+AMapWebAPI = {};
+
+AMapWebAPI.getDistance = function getDistance(start, end, callback) {
   var queryString = {
     origins: getPositionString(start),
     destination: getPositionString(end),
     output: 'json',
-    key: this.key
+    key: setting.webapikey
   };
-  var response = HTTP.get(this.host + 'distance', { params: queryString }, function (error, result) {
+  var response = HTTP.get(host + 'distance', { params: queryString }, function (error, result) {
     callback(error, JSON.parse(result.content).results[0].distance);
   });
 }
 
-AMapWebAPI.prototype.regeocode = function (location, callback) {
+AMapWebAPI.regeocode = function (location, callback) {
   var queryString = {
     location: getPositionString(location),
     output: 'json',
     radius: 1000,
     extensions: 'base',
-    key: this.key
+    key: setting.webapikey
   };
 
-  HTTP.get(this.host + 'geocode/regeo', { params: queryString }, function (error, result) {
+  HTTP.get(host + 'geocode/regeo', { params: queryString }, function (error, result) {
     callback(error, result.data.regeocode);
   });
 }
 
-AMapWebAPI.prototype.geocode = function (address, city, callback) {
+AMapWebAPI.geocode = function (address, city, callback) {
   var queryString = {
     address: address,
     output: 'json',
-    key: this.key
+    key: setting.webapikey
   };
 
-  HTTP.get(this.host + 'geocode/geo', { params: queryString }, function (error, result) {
+  HTTP.get(host + 'geocode/geo', { params: queryString }, function (error, result) {
     callback(error, result.data.geocodes[0].location);
   });
 }
 
-AMapWebAPI.prototype.getStaticMap = function (locations, callback) {
+AMapWebAPI.getStaticMap = function (locations, callback) {
   var query = {
     size: '500*440',
     paths: '5,0x0000FF,1,,:' + getLocationsString(locations),
     markers: getMarkersString(locations, '起', '现'),
-    key: this.key
+    key: setting.webapikey
   };
 
-  HTTP.get(this.host + 'staticmap?' + ConvertToQueryString(query), function (error, result) {
+  HTTP.get(host + 'staticmap?' + ConvertToQueryString(query), function (error, result) {
     callback(error, result.content);
   });
 }
@@ -76,7 +84,7 @@ function getPositionString(coordinates) {
 function getPositionsString(coordinatesList) {
   var result = getPositionString(coordinatesList[0]);
   for (var index = 1; index < coordinatesList.length; index++) {
-    result += '|' + this.getPositionString(coordinatesList[index]);
+    result += '|' + getPositionString(coordinatesList[index]);
   }
   return result;
 }
@@ -88,16 +96,4 @@ function ConvertToQueryString(obj) {
       str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
     }
   return str.join("&");
-}
-
-export default function AMapWebAPI(key) {
-  this.key = key;
-  this.host = 'http://restapi.amap.com/v3/';
-}
-
-var amapSetting = Meteor.settings.public.amap;
-if (amapSetting) {
-  AMapWebAPI = new AMapWebAPI(amapSetting.webapikey);
-} else {
-  console.log('error', 'Please Add amap setting.');
 }
