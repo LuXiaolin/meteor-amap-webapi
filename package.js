@@ -14,7 +14,7 @@ Package.onUse(function(api) {
   api.versionsFrom('1.3.2.4');
   api.use('ecmascript');
   api.use('http');
-  api.export('AMapWebAPI');
+  api.export('AMapWebAPI', 'server');
   api.addFiles('amap-webapi.js', 'server');
 });
 

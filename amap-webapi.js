@@ -1,4 +1,4 @@
-var setting = Meteor.settings.public.amap;
+var setting = Meteor.settings.private.amap;
 if (!setting) {
   console.log('error', 'Please Add amap setting.');
 }
