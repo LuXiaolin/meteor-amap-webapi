@@ -13,11 +13,12 @@ AMapWebAPI.getDistance = function getDistance(start, end, callback) {
     output: 'json',
     key: setting.webapikey
   };
-
+  
   var response = HTTP.get(host + 'distance', { params: queryString }, function (error, result) {
     var distance = -1;
-    if (JSON.parse(result.content).results) {
-      distance = JSON.parse(result.content).results[0].distance;
+    var results = JSON.parse(result.content).results;
+    if (results && results.length > 0) {
+      distance = results[0].distance;
     }
 
     callback(error, distance);
