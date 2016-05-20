@@ -1,4 +1,4 @@
-var setting = Meteor.settings.private.amap;
+var setting = Meteor.settings.public.amap;
 if (!setting) {
   console.log('error', 'Please Add amap setting.');
 }
@@ -13,7 +13,7 @@ AMapWebAPI.getDistance = function getDistance(start, end, callback) {
     output: 'json',
     key: setting.webapikey
   };
-  
+
   var response = HTTP.get(host + 'distance', { params: queryString }, function (error, result) {
     var distance = -1;
     var results = JSON.parse(result.content).results;
@@ -61,6 +61,31 @@ AMapWebAPI.getStaticMap = function (locations, callback) {
 
   HTTP.get(host + 'staticmap?' + ConvertToQueryString(query), function (error, result) {
     callback(error, result.content);
+  });
+}
+
+AMapWebAPI.getCurrentPosition = function (callback) {
+  navigator.geolocation.getCurrentPosition(callback, function () {
+    console.log('No access to get position');
+  });
+}
+
+AMapWebAPI.getCurrentAddress = function (callback) {
+  AMapWebAPI.getCurrentPosition(function (position) {
+    var coordinates = {
+      lat: position.coords.latitude,
+      lng: position.coords.longitude
+    };
+    AMapWebAPI.regeocode(coordinates, function (error, result) {
+      if (callback) {
+        console.log(result);
+        callback(error, {
+          coordinates: coordinates,
+          address: result.addressComponent.province + ' ' + result.addressComponent.city + ' ' + result.addressComponent.district,
+          addressComponent: result.addressComponent
+        });
+      }
+    });
   });
 }
 
